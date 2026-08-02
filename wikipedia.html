@@ -1,0 +1,27 @@
+---
+layout: default
+title: Wikipedia Edit Statistics
+permalink: /wikipedia
+---
+<div id="wiki-stats">Loading…</div>
+
+<script>
+  fetch('https://wikipedia-stats.ptolemyegan.com/api/stats')
+    .then(r => r.json())
+    .then(data => {
+      const projects = Object.entries(data.editsByProject)
+        .map(([proj, count]) => `<li>${proj}: ${count}</li>`)
+        .join('');
+      document.getElementById('wiki-stats').innerHTML = `
+        <p>Total edits: ${data.totalEdits}</p>
+        <ul>${projects}</ul>
+        <p>Pages created: ${data.totals.pagesCreated}</p>
+        <p>Thanks received: ${data.totals.thanksReceived}</p>
+        <p>Net bytes changed: ${data.totals.netBytes.toLocaleString()}</p>
+        <p><small>Last updated: ${new Date(data.updated).toLocaleString()}</small></p>
+      `;
+    })
+    .catch(() => {
+      document.getElementById('wiki-stats').textContent = 'Stats unavailable right now.';
+    });
+</script>
